@@ -122,6 +122,7 @@
             </configuration>
         </plugin>
     </plugins>
+        <finalName>nurs-komerz</finalName>
 </build>
 
 </project>
