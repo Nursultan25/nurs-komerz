@@ -1,1 +1,1 @@
-web: java -Dserver.port=$PORT $JAVA_OPTS -jar target/nurs-komerz.jar
+web: java -Dserver.port=$PORT $JAVA_OPTS -jar nurs-komerz.jar
