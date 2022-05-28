@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -27,9 +28,15 @@ public class SecurityConfig {
                 .anyRequest()
                 .authenticated()
                 .and()
-                .formLogin(Customizer.withDefaults());
+                .formLogin().successHandler(myAuthenticationSuccessHandler());
         return http.build();
     }
+
+    @Bean
+    public AuthenticationSuccessHandler myAuthenticationSuccessHandler(){
+        return new CustomAuthenticationSuccessHandler();
+    }
+
 
     @Autowired
     public void bindAuthenticationProvider(AuthenticationManagerBuilder authenticationManagerBuilder) {
