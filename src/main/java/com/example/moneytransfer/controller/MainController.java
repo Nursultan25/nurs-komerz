@@ -96,7 +96,7 @@ public class MainController {
     @PostMapping("/checkcode")
     public String checkode(@RequestParam(value = "code") String code) {
         transactionService.receive(code);
-        return "redirect:/received/";
+        return "redirect:/";
     }
 
     @RolesAllowed("ADMIN_ROLE")
