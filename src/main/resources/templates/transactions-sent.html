@@ -20,20 +20,22 @@
         <div style="display: flex; justify-content: space-between; align-items: center">
             <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" class="btn btn-success">Отправить</button>
 
+
+            <form method="get" style="display: flex; column-gap: 20px;" th:action="@{/by-code}">
+                    <input class="form-control" placeholder="Введите код" type="text" th:name="searchCode">
+                    <button type="submit" class="btn btn-success">Найти</button>
+            </form>
+
+
             <div class="date-picker">
                 <form style="display: flex; column-gap: 20px; align-items: center" method="get" th:action="@{/pickDates}">
                     <label>
-                        <input type="date" th:name="dateFrom">
+                        <input class="form-control" type="date" th:name="dateFrom">
                     </label>
                     <label>
-                        <input type="date" th:name="dateTo">
+                        <input class="form-control" type="date" th:name="dateTo">
                     </label>
                     <button class="btn btn-secondary" type="submit">Применить</button>
-                    <ul style="display: flex; column-gap: 15px; list-style: none; margin-top: 15px; margin-right: 2px;
-                           border: 2px solid grey; border-radius: 2px; padding: 1px 5px" th:each="total : ${totalAmount}">
-                        <li th:text="${total.key}"></li>
-                        <li th:text="${total.value}"></li>
-                    </ul>
                 </form>
             </div>
 
@@ -48,6 +50,14 @@
                     <a class="dropdown-item" th:href="@{'/?pageNumber=' + ${transactions.paging.pageNumber} + '&sortField=dateCreated&sortDir=desc'}">Дата по убыв</a>
                 </div>
             </div>
+        </div>
+
+        <div style="display: flex; column-gap: 20px; justify-content: flex-end">
+            <ul style="display: flex; column-gap: 15px; list-style: none; margin-top: 15px; margin-right: 2px;
+                               border: 2px solid grey; border-radius: 2px; padding: 1px 5px" th:each="total : ${totalAmount}">
+                <li th:text="${total.key}"></li>
+                <li th:text="${total.value}"></li>
+            </ul>
         </div>
 
         <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -65,7 +75,7 @@
 
                                     <div class="mb-3">
                                         <label for="number" class="form-label">Номер отправителя</label>
-                                        <input th:field="*{phoneNumberSender}" type="tel" class="form-control" id="number" placeholder="номер">
+                                        <input th:field="*{phoneNumberSender}" type="tel" class="form-control" id="number" placeholder="номер 0999444444">
                                     </div>
                                     <div class="mb-3">
                                         <label for="username" class="form-label">Имя отправителя</label>
@@ -73,7 +83,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="numberReceiver" class="form-label">Номер получателя</label>
-                                        <input th:field="*{phoneNumberReceiver}" type="tel" class="form-control" id="numberReceiver" placeholder="номер">
+                                        <input th:field="*{phoneNumberReceiver}" type="tel" class="form-control" id="numberReceiver" placeholder="номер 0999444444">
                                     </div>
                                     <div class="mb-3">
                                         <label for="usernameReceiver" class="form-label">Имя получателя</label>
@@ -154,7 +164,10 @@
                 <td th:text="${transaction.amount}"></td>
                 <td th:text="${transaction.currency}"></td>
                 <td th:text="${transaction.description}"></td>
-                <td th:text="${transaction.receiverClientNumber} + ' -> ' + ${transaction.senderClientNumber}"></td>
+                <td style="white-space: pre;" th:text="${transaction.senderClientNumber} + ' -> ' + ${transaction.receiverClientNumber}
+                + '
+           ' +
+                                                       ${transaction.userSender.username} + ' -> ' + ${transaction.userReceiver.username}"></td>
                 <td th:text="${transaction.dateCreated}"></td>
                 <td>
                     <h6 th:if="${transaction.status == T(com.example.moneytransfer.Enums.Status).ACTIVE}" style="color: orange">Активный</h6>
@@ -200,7 +213,7 @@
             </div>
         </div>
 
-        <nav aria-label="Page navigation" class="paging" style="display: flex; justify-content: space-between">
+        <nav aria-label="Page navigation" class="paging" style="display: flex; justify-content: space-between; margin-bottom: 20px">
 
             <ul class="pagination" th:if="${transactions.page.totalPages > 1}">
                 <li class="page-item" th:classappend="${!transactions.paging.isPrevEnabled()? 'disabled' : ''}">

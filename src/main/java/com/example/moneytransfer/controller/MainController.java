@@ -67,6 +67,21 @@ public class MainController {
         return "transactions-sent";
     }
 
+    @GetMapping("/by-code")
+    public String getByCode(@RequestParam String searchCode,
+                            @RequestParam(value = "pageNumber", required = false, defaultValue = "1") int pageNumber,
+                            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
+                            Model model) {
+        configCommonAttributes(model);
+        Paged<Transaction> page = transactionService.getByCode(searchCode, getUsername(request), pageNumber, size);
+        model.addAttribute("sendTrReq", new SendTransactionRequest());
+        model.addAttribute("refreshReq", new RefreshTransactionRequest());
+        model.addAttribute("transactions", page);
+        model.addAttribute("totalItems", page.getPage().getTotalElements());
+        model.addAttribute("totalAmount", transactionService.calcTotalAmount(page.getPage().getContent()));
+        return "transactions-sent";
+    }
+
     @GetMapping("/pickDates")
     public String getStatistics(@RequestParam(value = "dateFrom") @DateTimeFormat(pattern = "yyyy-MM-dd") Date dateFrom,
                                 @RequestParam(value = "dateTo") @DateTimeFormat(pattern = "yyyy-MM-dd") Date dateTo,

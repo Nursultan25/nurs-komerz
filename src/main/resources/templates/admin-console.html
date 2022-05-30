@@ -56,8 +56,14 @@
                     <td th:text="${transaction.currency}"></td>
                     <td th:text="${transaction.code}"></td>
                     <td th:text="${transaction.description}"></td>
-                    <td th:text="${transaction.senderClientNumber}"></td>
-                    <td th:text="${transaction.receiverClientNumber}"></td>
+                    <td th:text="${transaction.senderClientNumber} +
+                                    '
+                                    '
+                                 + ${transaction.userSender.username}"></td>
+                    <td th:text="${transaction.receiverClientNumber} +
+                                    '
+                                    '
+                                 + ${transaction.userReceiver.username}"></td>
                     <td th:text="${transaction.dateCreated}"></td>
                     <td th:text="${transaction.dateUpdated}"></td>
                     <td>
