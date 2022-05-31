@@ -1,14 +1,15 @@
 package com.example.moneytransfer.request;
 
-import com.example.moneytransfer.Enums.Currency;
-import com.example.moneytransfer.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 @Getter
