@@ -28,12 +28,10 @@ public class Transaction {
     private User userSender;
 
     @ManyToOne
-            @JoinColumn(name = "user_receiver", referencedColumnName = "id")
-    private User userReceiver;
+    private Client receiverClient;
 
-    private String receiverClientNumber;
-
-    private String senderClientNumber;
+    @ManyToOne
+    private Client senderClient;
 
     private BigDecimal amount;
 

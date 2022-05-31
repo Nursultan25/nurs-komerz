@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SendTransactionRequest {
+    private String userSender;
 
     @NotBlank(message = "Имя получателя обязательно")
     @Length(min = 2, max = 30)

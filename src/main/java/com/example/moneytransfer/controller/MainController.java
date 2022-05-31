@@ -32,6 +32,7 @@ public class MainController {
 
     @PostMapping("/sendForm")
     public String sendForm(@Valid @ModelAttribute SendTransactionRequest sendTrReq) {
+        sendTrReq.setUserSender(getUsername(request));
         transactionService.send(sendTrReq);
         return "redirect:/";
     }
@@ -50,11 +51,8 @@ public class MainController {
                        @RequestParam(value = "sortDir", defaultValue = "desc") String sortDir,
                        Model model) {
         configCommonAttributes(model);
-        List<Transaction> allTransactions = transactionService.getStatistics(getUsername(request),
-                DateConverter.convertToDateViaInstant(LocalDateTime.now().minusMonths(1)),
-                DateConverter.convertToDateViaInstant(LocalDateTime.now()));
-        Paged<Transaction> paged = transactionService.getAllBySender(getUsername(request),
-                pageNumber, size, sortField, sortDir,
+
+        Paged<Transaction> paged = transactionService.getAllByDate(pageNumber, size, sortField, sortDir,
                 DateConverter.convertToDateViaInstant(LocalDateTime.now().minusMonths(1)),
                 DateConverter.convertToDateViaInstant(LocalDateTime.now()));
         model.addAttribute("sortField", sortField);
@@ -63,7 +61,7 @@ public class MainController {
         model.addAttribute("totalItems", paged.getPage().getTotalElements());
         model.addAttribute("sendTrReq", new SendTransactionRequest());
         model.addAttribute("refreshReq", new RefreshTransactionRequest());
-        model.addAttribute("totalAmount", transactionService.calcTotalAmount(allTransactions));
+        model.addAttribute("totalAmount", transactionService.calcTotalAmount(paged.getPage().getContent()));
         return "transactions-sent";
     }
 
@@ -73,7 +71,7 @@ public class MainController {
                             @RequestParam(value = "size", required = false, defaultValue = "10") int size,
                             Model model) {
         configCommonAttributes(model);
-        Paged<Transaction> page = transactionService.getByCode(searchCode, getUsername(request), pageNumber, size);
+        Paged<Transaction> page = transactionService.getByCode(searchCode, pageNumber, size);
         model.addAttribute("sendTrReq", new SendTransactionRequest());
         model.addAttribute("refreshReq", new RefreshTransactionRequest());
         model.addAttribute("transactions", page);
@@ -91,12 +89,11 @@ public class MainController {
                                 @RequestParam(value = "sortDir", defaultValue = "desc") String sortDir,
                                 Model model) {
         configCommonAttributes(model);
-        Paged<Transaction> paged = transactionService.getAllBySender(getUsername(request),
+        Paged<Transaction> paged = transactionService.getAllByDate(
                 pageNumber, size, sortField, sortDir, dateFrom, dateTo);
-        List<Transaction> allTransactions = transactionService.getStatistics(getUsername(request),
-                dateFrom, dateTo);
+
         model.addAttribute("transactions", paged);
-        model.addAttribute("totalAmount", transactionService.calcTotalAmount(allTransactions));
+        model.addAttribute("totalAmount", transactionService.calcTotalAmount(paged.getPage().getContent()));
         model.addAttribute("sendTrReq", new SendTransactionRequest());
         model.addAttribute("refreshReq", new RefreshTransactionRequest());
         model.addAttribute("sortField", sortField);

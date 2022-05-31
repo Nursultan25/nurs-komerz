@@ -94,7 +94,7 @@
                                         <textarea th:field="*{description}" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
                                     </div>
                                     <div class="input-group mb-3">
-                                        <input th:field="*{amount}" type="number" class="form-control" placeholder="Сумма" aria-label="Username">
+                                        <input th:field="*{amount}" type="number" step="any" class="form-control" placeholder="Сумма" aria-label="Username">
                                         <span class="input-group-text"></span>
                                         <select th:field="*{currency}" class="form-select" aria-label="Default select example">
                                             <option value="USD">USD</option>
@@ -157,17 +157,17 @@
             <tr>
                 <td>
                     <i th:if="${transaction.userSender.username == name}" class="material-icons">call_made</i>
-                    <i th:if="${transaction.userReceiver.username == name}" class="material-icons">call_received</i>
+                    <i th:if="${transaction.userSender.username != name}" class="material-icons">call_received</i>
                 </td>
                 <th th:if="${transaction.userSender.username == name}" th:text="${transaction.code}" scope="row"></th>
-                <th th:if="${transaction.userReceiver.username == name}" scope="row">**********</th>
+                <th th:if="${transaction.userSender.username != name}" scope="row">**********</th>
                 <td th:text="${transaction.amount}"></td>
                 <td th:text="${transaction.currency}"></td>
                 <td th:text="${transaction.description}"></td>
-                <td style="white-space: pre;" th:text="${transaction.senderClientNumber} + ' -> ' + ${transaction.receiverClientNumber}
+                <td style="white-space: pre;" th:text="${transaction.senderClient.phoneNumber} + ' -> ' + ${transaction.receiverClient.phoneNumber}
                 + '
            ' +
-                                                       ${transaction.userSender.username} + ' -> ' + ${transaction.userReceiver.username}"></td>
+                                                       ${transaction.senderClient.name} + ' -> ' + ${transaction.receiverClient.name}"></td>
                 <td th:text="${transaction.dateCreated}"></td>
                 <td>
                     <h6 th:if="${transaction.status == T(com.example.moneytransfer.Enums.Status).ACTIVE}" style="color: orange">Активный</h6>
@@ -177,7 +177,7 @@
                 <td th:if="${transaction.status == T(com.example.moneytransfer.Enums.Status).OVERDUE && transaction.userSender.username == name}">
                     <button type="button" data-bs-toggle="modal" data-bs-target="#refreshCodeModal" class="btn btn-danger">Обновить</button>
                 </td>
-                <td th:if="${transaction.userReceiver.username == name}">
+                <td th:if="${transaction.userSender.username != name}">
                     <button th:if="${transaction.status == T(com.example.moneytransfer.Enums.Status).ACTIVE}" type="button" data-bs-toggle="modal" data-bs-target="#exampleModalCenter2" class="btn btn-danger">Получить</button>
                     <button th:if="${transaction.status == T(com.example.moneytransfer.Enums.Status).COMPLETE}" type="button" disabled data-bs-toggle="modal" data-bs-target="#exampleModalCenter2" class="btn btn-secondary">Получить</button>
                     <button th:if="${transaction.status == T(com.example.moneytransfer.Enums.Status).OVERDUE}" type="button" disabled data-bs-toggle="modal" data-bs-target="#exampleModalCenter2" class="btn btn-secondary">Получить</button>

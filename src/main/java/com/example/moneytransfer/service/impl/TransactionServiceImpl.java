@@ -51,14 +51,7 @@ public class TransactionServiceImpl implements TransactionService {
             throw new RuntimeException("Не допустимая транзакция");
         }
 
-/*
-        User userReceiver = userRepository.findByUsername(request.getUsernameReceiver())
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
-*/
-/*
-        User userSender = userRepository.findByUsername(request.getUserSender())
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
-*/
+        User sender = userRepository.findByUsername(request.getUserSender()).orElseThrow();
 
         Client clientSender = Client.builder()
                 .name(request.getUsernameSender())
@@ -72,35 +65,10 @@ public class TransactionServiceImpl implements TransactionService {
 
         clientRepository.saveAll(List.of(clientSender, clientReceiver));
 
-        User sender = new User();
-        sender.setClients(Arrays.asList(clientSender));
-        sender.setPassword("$2a$12$pJs/ld9Jjzh1e9cwtj8EYuiAw8NYHuPwy2Wz9L6IWCXkx1w3K5lGu");
-        sender.setRole(Role.USER_ROLE);
-        sender.setUsername(request.getUsernameSender());
-        userRepository.save(sender);
-
-        /*List<Client> senderClients = userSender.getClients();
-        senderClients.add(clientSender);
-        userSender.setClients(senderClients);*/
-
-        User receiver = new User();
-        receiver.setClients(Arrays.asList(clientReceiver));
-        receiver.setPassword("$2a$12$pJs/ld9Jjzh1e9cwtj8EYuiAw8NYHuPwy2Wz9L6IWCXkx1w3K5lGu");
-        receiver.setRole(Role.USER_ROLE);
-        receiver.setUsername(request.getUsernameReceiver());
-        userRepository.save(receiver);
-
-     /*   List<Client> receiverClients = userReceiver.getClients();
-        receiverClients.add(clientReceiver);
-        userReceiver.setClients(receiverClients);
-
-        userRepository.saveAll(List.of(userSender, userReceiver));*/
-
         Transaction transaction = Transaction.builder()
                 .userSender(sender)
-                .userReceiver(receiver)
-                .senderClientNumber(request.getPhoneNumberSender())
-                .receiverClientNumber(request.getPhoneNumberReceiver())
+                .senderClient(clientSender)
+                .receiverClient(clientReceiver)
                 .description(request.getDescription())
                 .currency(Currency.valueOf(request.getCurrency()))
                 .status(Status.ACTIVE)
@@ -109,12 +77,6 @@ public class TransactionServiceImpl implements TransactionService {
                 .build();
 
         return transactionRepository.save(transaction);
-    }
-
-    public Boolean checkClientUser(String phoneNumber, User user) {
-        return user.getClients().stream()
-                .map(client1 -> client1.getPhoneNumber().contains(phoneNumber))
-                .findAny().orElseThrow(() -> new RuntimeException("номер не принадлежит пользователю"));
     }
 
     @Override
@@ -137,34 +99,18 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Paged<Transaction> getAllBySender(String sender, int pageNum, int pageSize, String sortField, String sortDir, Date date1, Date date2) {
-        User sender1 = userRepository.findByUsername(sender)
-                .orElseThrow(() -> new RuntimeException());
-
+    public Paged<Transaction> getAllByDate(int pageNum, int pageSize, String sortField, String sortDir, Date date1, Date date2) {
         PageRequest request = PageRequest.of(pageNum - 1, pageSize, sortDir.equals("asc") ? Sort.by(sortField).ascending()
                 : Sort.by(sortField).descending());
-        Page<Transaction> postPage = transactionRepository.findAllByUserSenderOrUserReceiverAndDateCreatedBetween(sender1, sender1, date1, date2, request);
+        Page<Transaction> postPage = transactionRepository.findAllByDateCreatedBetween(date1, date2, request);
         return new Paged<>(postPage, Paging.of(postPage.getTotalPages(), pageNum, pageSize));
     }
 
     @Override
-    public Paged<Transaction> getAllByReceiver(String receiver, int pageNum, int pageSize, String sortField, String sortDir) {
-        User receiver1 = userRepository.findByUsername(receiver)
-                .orElseThrow(() -> new RuntimeException());
-
-        PageRequest request = PageRequest.of(pageNum - 1, pageSize, sortDir.equals("asc") ? Sort.by(sortField).ascending()
-                : Sort.by(sortField).descending());
-        Page<Transaction> postPage = transactionRepository.findAllByUserReceiver(receiver1, request);
-        return new Paged<>(postPage, Paging.of(postPage.getTotalPages(), pageNum, pageSize));
-    }
-
-    @Override
-    public Paged<Transaction> getByCode(String code, String user, int pageNum, int pageSize) {
-        User senderAndReceiver = userRepository.findByUsername(user)
-                .orElseThrow(() -> new RuntimeException());
+    public Paged<Transaction> getByCode(String code, int pageNum, int pageSize) {
 
         PageRequest request = PageRequest.of(pageNum - 1, pageSize, Sort.by("dateCreated").descending());
-        Page<Transaction> postPage = transactionRepository.findByCodeAndUserReceiverOrCodeAndUserSender(code, senderAndReceiver, code, senderAndReceiver, request);
+        Page<Transaction> postPage = transactionRepository.findByCode(code, request);
         return new Paged<>(postPage, Paging.of(postPage.getTotalPages(), pageNum, pageSize));}
 
     @Override
@@ -187,14 +133,6 @@ public class TransactionServiceImpl implements TransactionService {
                     return transactionRepository.save(transaction1);
                 })
                 .orElseThrow(() -> new RuntimeException("Такой транзакции не существует"));
-    }
-
-    @Override
-    public List<Transaction> getStatistics(String sender, Date date1, Date date2) {
-        User sender1 = userRepository.findByUsername(sender)
-                .orElseThrow(() -> new RuntimeException());
-        List<Transaction> transactions = transactionRepository.findAllByUserSenderAndDateCreatedBetween(sender1, date1, date2);
-        return transactions;
     }
 
     @Override

@@ -20,17 +20,13 @@ public interface TransactionService {
 
     Paged<Transaction> getAll(int pageNum, int pageSize, String sortField, String sortDir);
 
-    Paged<Transaction> getAllBySender(String sender, int pageNum, int pageSize, String sortField, String sortDir, Date date1, Date date2);
+    Paged<Transaction> getAllByDate(int pageNum, int pageSize, String sortField, String sortDir, Date date1, Date date2);
 
-    Paged<Transaction> getAllByReceiver(String receiver, int pageNum, int pageSize, String sortField, String sortDir);
-
-    Paged<Transaction> getByCode(String code, String user, int pageNum, int pageSize);
+    Paged<Transaction> getByCode(String code, int pageNum, int pageSize);
 
     Transaction receive(String code);
 
     Transaction refresh(RefreshTransactionRequest request);
-
-    List<Transaction> getStatistics(String sender, Date date1, Date date2);
 
     Map<String, Long> calcTotalAmount(List<Transaction> transactions);
 }
