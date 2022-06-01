@@ -14,15 +14,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/*
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource("/application-test.properties")
-@Sql(value = {"/init-db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-*/
 class MainControllerTest {
 
-    /*@Autowired
+    @Autowired
     private MockMvc mockMvc;
 
     @Autowired
@@ -49,9 +46,8 @@ class MainControllerTest {
                 .andExpect(redirectedUrl("/"));
     }
 
-    @Test
+    /*@Test
     void refreshTransaction() {
-
     }
 
     @Test
@@ -72,13 +68,5 @@ class MainControllerTest {
 
     @Test
     void changeStatus() {
-    }
-
-    @Test
-    void logout() {
-    }
-
-    @Test
-    void configCommonAttributes() {
     }*/
 }
